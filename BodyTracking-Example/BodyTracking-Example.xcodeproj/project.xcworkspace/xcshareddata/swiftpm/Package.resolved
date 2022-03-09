@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "BodyTracking",
+        "repositoryURL": "https://github.com/Reality-Dev/BodyTracking",
+        "state": {
+          "branch": null,
+          "revision": "de39702794e8f922fbfccfce30f31cac09f17951",
+          "version": "1.0.72"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

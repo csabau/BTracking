@@ -66,6 +66,10 @@ class ARSUIView2D: BodyARView {
         rightElbowCircle.addSubview(angleLabel)
        // rightElbowCircle.addSubview(newLine)
         
+        
+        
+        
+        
         //new
         //let firstLine = Line().stroke(.blue, lineWidth: 5)
        // rightElbowCircle.addSubview(firstLine as! UIView)
@@ -85,18 +89,22 @@ class ARSUIView2D: BodyARView {
         
         
         
-        let bone1 = DrawLine(frame: CGRect(x: 0, y: 0, width: self.windowWidth, height: self.windowHeight), start: startJoint1, end: endJoint1)
-        self.bodyTracker.attachLine(thisNewView: bone1)
-        let bone2 = DrawLine(frame: CGRect(x: 0, y: 0, width: self.windowWidth, height: self.windowHeight), start: startJoint2, end: endJoint2)
-        self.bodyTracker.attachLine(thisNewView: bone2)
+        
+        
+        
+        
+//        let bone1 = DrawLine(frame: CGRect(x: 0, y: 0, width: self.windowWidth, height: self.windowHeight), start: startJoint1, end: endJoint1)
+//        self.bodyTracker.attachLine(thisNewView: bone1)
+//        let bone2 = DrawLine(frame: CGRect(x: 0, y: 0, width: self.windowWidth, height: self.windowHeight), start: startJoint2, end: endJoint2)
+//        self.bodyTracker.attachLine(thisNewView: bone2)
         //self.bodyTracker.attach(thisView: bone, toThisJoint: .right_hand_joint)
         
         //Another way to attach views to the skeletion, but iteratively this time:
         //CHANGE THE WAY THE CIRCLES LOOK
         jointsToShow.forEach { joint in
-            ////let circle = makeCircle(circleRadius: 40)
+            let circle = makeCircle(circleRadius: 40)
             //let line = makeLine()
-            ////self.bodyTracker.attach(thisView: circle, toThisJoint: joint)
+            self.bodyTracker.attach(thisView: circle, toThisJoint: joint)
             //self.bodyTracker.attachLine(thisNewView: line)
             
             //let bone = DrawLine(frame: CGRect(x: 150, y: 300, width: 40.0, height: 40.0))
@@ -149,7 +157,7 @@ class ARSUIView2D: BodyARView {
 
         
 //-------------------------------------------------------------------------------------------------
-    
+/*
     class DrawLine: UIView {
         
         var path: UIBezierPath!
@@ -225,6 +233,7 @@ class ARSUIView2D: BodyARView {
         
         
     }
+ */
     
     //-------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------------
@@ -249,6 +258,60 @@ class ARSUIView2D: BodyARView {
     
 }
 
+
+
+//defining bones of the skeleton
+
+let bonesToShow : [String : [TwoDBodyJoint]] = [
+    "rightForearm" : [
+         .right_hand_joint , .right_forearm_joint
+    ],
+    "rightArm" : [
+        .right_forearm_joint , .right_shoulder_1_joint
+    ],
+    "rightShoulder" : [
+        .right_shoulder_1_joint , .neck_1_joint
+    ],
+    "leftForearm" : [
+         .left_hand_joint , .left_forearm_joint
+    ],
+    "leftArm" : [
+        .left_forearm_joint , .left_shoulder_1_joint
+    ],
+    "leftShoulder" : [
+        .left_shoulder_1_joint , .neck_1_joint
+    ],
+    "rightFoot" : [
+        .right_foot_joint , .right_leg_joint
+    ],
+    "rightLeg" : [
+        .right_leg_joint , .right_upLeg_joint
+    ],
+    "rightHip" : [
+        .right_upLeg_joint , .root
+    ],
+    "leftFoot" : [
+        .left_foot_joint , .left_leg_joint
+    ],
+    "lefttLeg" : [
+        .left_leg_joint , .left_upLeg_joint
+    ],
+    "leftHip" : [
+        .left_upLeg_joint , .root
+    ],
+    "spine" : [
+        .root , .neck_1_joint
+    ],
+    "head" : [
+        .neck_1_joint , .head_joint
+    ]
+    
+]
+
+
+   // print("bone for key \(bone.key) The bone starts at: \(bone.value.keys) and finishes at: \(bone.value.values)")
+
+
 extension ARSUIView2D: ARSessionDelegate {
     
     //For RealityKit 2 we should use a RealityKit System instead of this update function but that would be limited to devices running iOS 15.0+
@@ -259,6 +322,15 @@ extension ARSUIView2D: ARSessionDelegate {
                                                                 .right_forearm_joint,
                                                                 .right_shoulder_1_joint) {
             self.angleLabel.text = String(format: "%.0f", Float(jointAngle))
+        }
+        
+        //draw line between 2 joints with the modified function fo angle between two joints
+        
+        bonesToShow.forEach{ bone in
+            self.bodyTracker.removeBone(bone.key)
+            let jointLine = self.bodyTracker.lineBetween2Joints(bone.value[0], bone.value[1])
+            self.bodyTracker.attachLine(thisNewView: jointLine, ofThisBone: bone.key)
+        
         }
         
         //------Draw line between joints-------

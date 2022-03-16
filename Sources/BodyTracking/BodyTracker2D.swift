@@ -37,6 +37,9 @@ public class BodyTracker2D {
 
     public private(set) var trackedViews = [TwoDBodyJoint : UIView]()
     
+    //adding a variable to store the view for bones, so that I can remove them
+    public private(set) var trackedBones = [String : UIView]()
+    
     ///True if a body is detected in the current frame.
     public private(set) var bodyIsDetected = false
     
@@ -60,7 +63,14 @@ public class BodyTracker2D {
         self.trackedViews.forEach { view in
             view.value.removeFromSuperview()
         }
+        
+        //removing all bones
+        self.trackedBones.forEach { view in
+            view.value.removeFromSuperview()
+        }
         self.trackedViews.removeAll()
+        
+        self.trackedBones.removeAll()
     }
     
     
@@ -94,36 +104,25 @@ public class BodyTracker2D {
         }
     }
     
-    public func attachLine(thisNewView: UIView){
-       
+    public func attachLine(thisNewView: UIView, ofThisBone: String){
+        self.trackedBones[ofThisBone] = thisNewView
         if thisNewView.superview == nil {
             arView.addSubview(thisNewView)
            // print("circle to: \(thisView)")
         }
     }
     
-    //TRY to add LINE between 2 joints
-//    public func drawLine() {
-//        // print("position: \(1) x:\(jointScreenPositions[1].x) y:\(jointScreenPositions[1].y)") THIS DOESN'T WORK
-//        
-//        //var path = Path()
-////        for i in 0..<jointScreenPositions.count-1 {
-////            Path { path in
-////                path.move(to: CGPoint(x:jointScreenPositions[i].x, y:jointScreenPositions[i].y))
-////                path.addLine(to: CGPoint(x:jointScreenPositions[i+1].x, y:jointScreenPositions[i+1].y))
-////            }
-////            .stroke(Color.red)
-////
-////            //print("position: \(i) x:\(jointScreenPositions[i].x) y:\(jointScreenPositions[i].y)")
-////        }
-//            
-//
-//        }
+  
     
     
     public func removeJoint(_ joint: TwoDBodyJoint){
         self.trackedViews[joint]?.removeFromSuperview()
         self.trackedViews.removeValue(forKey: joint)
+    }
+    
+    public func removeBone(_ bone: String){
+        self.trackedBones[bone]?.removeFromSuperview()
+        self.trackedBones.removeValue(forKey: bone)
     }
     
     //Run this code every frame to get the joints.
@@ -136,33 +135,37 @@ public class BodyTracker2D {
 
     }
     
-    private func updateJointScreenPositions(frame: ARFrame){
+    private func updateJointScreenPositions(frame: ARFrame) {
         guard let detectedBody = frame.detectedBody else {
             if bodyIsDetected == true {bodyIsDetected = false}
             return
         }
         if bodyIsDetected == false {bodyIsDetected = true}
         
-        guard
-            let interfaceOrientation = self.arView.window?.windowScene?.interfaceOrientation
-        else { return }
+        guard let interfaceOrientation = self.arView.window?.windowScene?.interfaceOrientation else { return }
         
         let jointLandmarks = detectedBody.skeleton.jointLandmarks
         
+        //----------------------------------------------------------------------------------------------------
         //Convert the normalized joint points into screen-space CGPoints.
         let transform = frame.displayTransform(for: interfaceOrientation, viewportSize: self.arView.frame.size)
+        //----------------------------------------------------------------------------------------------------
+        
         for i in 0..<jointLandmarks.count {
             //print("joint \(i) jointLadnmarks - X:\(jointLandmarks[i].x) Y:\(jointLandmarks[i].y) \n")
                 if jointLandmarks[i].x.isNaN || jointLandmarks[i].y.isNaN {
                     continue
                 }
+            
                 let point = CGPoint(x: CGFloat(jointLandmarks[i].x),
-                                               y: CGFloat(jointLandmarks[i].y))
+                                    y: CGFloat(jointLandmarks[i].y))
+            
+            //----------------------------------------------------------------------------------------------------
                 //Convert from normalized pixel coordinates (0,0 top-left, 1,1 bottom-right)
                 //to screen-space coordinates.
                 let normalizedCenter = point.applying(transform)
-            let center = normalizedCenter.applying(CGAffineTransform.identity.scaledBy(x: self.arView.frame.width, y: self.arView.frame.height))
-            self.jointScreenPositions[i] = center
+                let center = normalizedCenter.applying(CGAffineTransform.identity.scaledBy(x: self.arView.frame.width, y: self.arView.frame.height))
+                self.jointScreenPositions[i] = center
            
           // print("joint ScreenPositions \(i):\(center) \n")
             
@@ -177,7 +180,9 @@ public class BodyTracker2D {
         
         for view in trackedViews {
             let jointIndex = view.key.rawValue
+            //print("jointIndex in trackedViews is: \(jointIndex)") this is the number of the joint
             let screenPosition = jointScreenPositions[jointIndex]
+            //print("screenPosition in trackedViews is: \(screenPosition)") this returns the creen position of the joint every frame
             view.value.center = screenPosition
         }
     }
@@ -245,66 +250,22 @@ public class BodyTracker2D {
     
     
     //--------------------ADD Path between two joints ---------------
-//    public func pathBetween2Joints(_ joint1: TwoDBodyJoint,
-//                                 _ joint2: TwoDBodyJoint) -> CGFloat? {
-//        let joint1Index = joint1.rawValue
-//        let joint2Index = joint2.rawValue
-//
-//        //Make sure the joints we are looking for are included in jointScreenPositions.
-//        guard (jointScreenPositions.count - 1) >= max(joint1Index, joint2Index) else { return nil }
-//
-//        let joint1ScreenPosition = jointScreenPositions[joint1Index]
-//        let joint2ScreenPosition = jointScreenPositions[joint2Index]
-//
-//        return angleBetween2Points(point1: joint1ScreenPosition,
-//                                         point2: joint2ScreenPosition)
-//    }
-    
-//    private func pathBetween2Points(point1: CGPoint, point2: CGPoint) {
-//        Path { path in
-//            path.move(to: point1)
-//            path.addLine(to: point2)
-//        }
-//
-//    }
-    //---------------------------- Add Line between points------------
+    public func lineBetween2Joints(_ joint1: TwoDBodyJoint,
+                                 _ joint2: TwoDBodyJoint) -> UIView {
+        let joint1Index = joint1.rawValue
+        let joint2Index = joint2.rawValue
 
-    //TRY to add LINE between 2 joints
- public func drawLine() {
-     print("Array of joints: \(String(describing: jointScreenPositions))")
- //print("position: \(1) x:\(jointScreenPositions[1].x) y:\(jointScreenPositions[1].y)")
- }
-//        //var path = Path()
-////        for i in 0..<jointScreenPositions.count-1 {
-////            Path { path in
-////                path.move(to: CGPoint(x:jointScreenPositions[i].x, y:jointScreenPositions[i].y))
-////                path.addLine(to: CGPoint(x:jointScreenPositions[i+1].x, y:jointScreenPositions[i+1].y))
-////            }
-////            .stroke(Color.red)
-////
-////            //print("position: \(i) x:\(jointScreenPositions[i].x) y:\(jointScreenPositions[i].y)")
-////        }
-//
-//
-//        }
-//    public func lineBetween2Points (point1: CGPoint, point2: CGPoint) -> CGFloat {
-//        // size is equal to the distance between two entities
-//        let rectangle = ModelEntity(mesh: .generateBox(width: 0.003, height: 0.003, depth: 0.01), materials: [SimpleMaterial(color: UIColor(.blue), isMetallic: false)])
-//
-//        // middle point of two points
-//
-//        let xDist: CGFloat = (point2.x - point1.x) //[2]
-//        let yDist: CGFloat = (point2.y - point1.y) //[3]
-//        let distance: CGFloat = sqrt((xDist * xDist) + (yDist * yDist)) //[4]
-//
-//        let middlePoint = point1 + point2 / 2
-//
-//        let lineAnchor = AnchorEntity()
-//        lineAnchor.position.x = middlePoint.x
-//        lineAnchor.look(at: point1, from: middlePoint, relativeTo: nil)
-//        lineAnchor.addChild(rectangle)
-//        arView.scene.addAnchor(lineAnchor)
-//    }
+        //Make sure the joints we are looking for are included in jointScreenPositions.
+//        guard (jointScreenPositions.count - 1) >= max(joint1Index, joint2Index) else { return }
+
+        let joint1ScreenPosition = jointScreenPositions[joint1Index]
+        let joint2ScreenPosition = jointScreenPositions[joint2Index]
+        
+        //print("joint 1 : \(joint1ScreenPosition)  , joint 2: \(joint2ScreenPosition)")
+
+        return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start: joint1ScreenPosition, end: joint2ScreenPosition)
+    }
+    
 
     
 }
@@ -386,18 +347,54 @@ public enum TwoDBodyJoint: Int, CaseIterable {
 
 //---------------------------- Add Line between points------------
 
-/*
-
-// size is equal to the distance between two entities
-let rectangle = ModelEntity(mesh: .generateBox(width: 0.003, height: 0.003, depth: size), materials: [SimpleMaterial(color: UIColor(.blue), isMetallic: false)])
+class DrawLine: UIView {
     
-// middle point of two points
-let middlePoint : simd_float3 = simd_float3((startPoint.x + endPoint.x)/2, (startPoint.y + endPoint.y)/2, (startPoint.z + endPoint.z)/2)
+    var path: UIBezierPath!
+    var strokeColour: CGColor = #colorLiteral(red: 0.670588235294118, green: 0.898039215686275, blue: 0.12156862745098, alpha: 1)
+    var fillColour: CGColor = #colorLiteral(red: 0.250980392156863, green: 0.250980392156863, blue: 0.250980392156863, alpha: 0.0)
+    var startPoint: CGPoint?
+    var endPoint: CGPoint?
+    
+  init(frame: CGRect, start: CGPoint, end: CGPoint){
+      
+      self.startPoint = start
+      self.endPoint = end
+      super.init(frame: frame)
+      
+      simpleShapeLayer()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
         
-let lineAnchor = AnchorEntity()
-lineAnchor.position = middlePoint
-lineAnchor.look(at: startPoint!, from: middlePoint, relativeTo: nil)
-lineAnchor.addChild(rectangle)
-arView.scene.addAnchor(lineAnchor)
-
-*/
+        
+       super.init(coder: aDecoder)
+    }
+    
+    func createLine(start: CGPoint, end: CGPoint) {
+        path = UIBezierPath()
+        
+        path.move(to: start)
+        path.addLine(to: end)
+    }
+        
+    
+//
+    
+    //create the CAShapeLayer Object because it's more versatile and can define stroke width. We assign the path of the BezierPath from above
+    func simpleShapeLayer() {
+        self.createLine(start: startPoint!, end: endPoint!)
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = self.path.cgPath
+        
+        shapeLayer.fillColor = fillColour
+        shapeLayer.strokeColor = strokeColour
+        shapeLayer.lineWidth = 4.0
+        
+        self.layer.addSublayer(shapeLayer)
+        
+        
+    }
+    
+    
+}

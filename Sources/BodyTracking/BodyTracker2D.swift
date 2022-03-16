@@ -76,6 +76,9 @@ public class BodyTracker2D {
         jointScreenPositions = []
         for _ in 0...16 {
             jointScreenPositions.append(CGPoint())
+            
+            
+        
         }
     }
     
@@ -87,7 +90,15 @@ public class BodyTracker2D {
         self.trackedViews[thisJoint] = thisView
         if thisView.superview == nil {
             arView.addSubview(thisView)
-            print("circle to: \(thisView)")
+           // print("circle to: \(thisView)")
+        }
+    }
+    
+    public func attachLine(thisNewView: UIView){
+       
+        if thisNewView.superview == nil {
+            arView.addSubview(thisNewView)
+           // print("circle to: \(thisView)")
         }
     }
     
@@ -141,6 +152,7 @@ public class BodyTracker2D {
         //Convert the normalized joint points into screen-space CGPoints.
         let transform = frame.displayTransform(for: interfaceOrientation, viewportSize: self.arView.frame.size)
         for i in 0..<jointLandmarks.count {
+            //print("joint \(i) jointLadnmarks - X:\(jointLandmarks[i].x) Y:\(jointLandmarks[i].y) \n")
                 if jointLandmarks[i].x.isNaN || jointLandmarks[i].y.isNaN {
                     continue
                 }
@@ -151,8 +163,11 @@ public class BodyTracker2D {
                 let normalizedCenter = point.applying(transform)
             let center = normalizedCenter.applying(CGAffineTransform.identity.scaledBy(x: self.arView.frame.width, y: self.arView.frame.height))
             self.jointScreenPositions[i] = center
+           
+          // print("joint ScreenPositions \(i):\(center) \n")
             
         }
+       // print("Array of joints: \(String(describing: jointScreenPositions))")
     }
     
     func updateTrackedViews(frame: ARFrame){
@@ -254,7 +269,24 @@ public class BodyTracker2D {
 //    }
     //---------------------------- Add Line between points------------
 
-    
+    //TRY to add LINE between 2 joints
+ public func drawLine() {
+     print("Array of joints: \(String(describing: jointScreenPositions))")
+ //print("position: \(1) x:\(jointScreenPositions[1].x) y:\(jointScreenPositions[1].y)")
+ }
+//        //var path = Path()
+////        for i in 0..<jointScreenPositions.count-1 {
+////            Path { path in
+////                path.move(to: CGPoint(x:jointScreenPositions[i].x, y:jointScreenPositions[i].y))
+////                path.addLine(to: CGPoint(x:jointScreenPositions[i+1].x, y:jointScreenPositions[i+1].y))
+////            }
+////            .stroke(Color.red)
+////
+////            //print("position: \(i) x:\(jointScreenPositions[i].x) y:\(jointScreenPositions[i].y)")
+////        }
+//
+//
+//        }
 //    public func lineBetween2Points (point1: CGPoint, point2: CGPoint) -> CGFloat {
 //        // size is equal to the distance between two entities
 //        let rectangle = ModelEntity(mesh: .generateBox(width: 0.003, height: 0.003, depth: 0.01), materials: [SimpleMaterial(color: UIColor(.blue), isMetallic: false)])

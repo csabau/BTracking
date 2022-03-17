@@ -262,6 +262,24 @@ public class BodyTracker2D {
     }
 //---------------------------------------------------------------------------------------------
 
+//--------------------Calculate distance between two joints --------------------------------------
+        public func distanceBetween2Joints(_ joint1: TwoDBodyJoint,
+                                     _ joint2: TwoDBodyJoint) -> CGFloat {
+            let joint1Index = joint1.rawValue
+            let joint2Index = joint2.rawValue
+
+
+            let joint1ScreenPosition = jointScreenPositions[joint1Index]
+            let joint2ScreenPosition = jointScreenPositions[joint2Index]
+            
+            let xDist : CGFloat = joint2ScreenPosition.x - joint1ScreenPosition.x //[2]
+            let yDist : CGFloat = (joint2ScreenPosition.y - joint1ScreenPosition.y) //[3]
+            let distance : CGFloat = sqrt((xDist * xDist) + (yDist * yDist)) //[4]
+            
+            return distance
+        }
+//---------------------------------------------------------------------------------------------
+    
     
 }
 

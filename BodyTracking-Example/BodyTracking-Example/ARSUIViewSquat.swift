@@ -9,6 +9,7 @@ import UIKit
 import ARKit
 import RealityKit
 import BodyTracking
+import AVFoundation
 
 
 
@@ -20,11 +21,36 @@ class ARSUIViewSquat: BodyARView {
     
     ///Use this to display the angle formed at this joint.
     ///See the call to "angleBetween3Joints" below.
-    private var rightElbowAngleLabel: UILabel!
-    private var rightShoulderAngleLabel: UILabel!
     private var rightLegAngleLabel: UILabel!
     private var rightKneeAngleLabel: UILabel!
+    private var neckAngleLabel: UILabel!
     
+    
+    //defining bones of the skeleton
+
+    let squatBonesToShow : [String : [TwoDBodyJoint]] = [
+
+        "rightFoot" : [
+            .right_foot_joint , .right_leg_joint
+        ],
+        "rightLeg" : [
+            .right_leg_joint , .right_upLeg_joint
+        ],
+        "rightHip" : [
+            .right_upLeg_joint , .root
+        ],
+        "spine" : [
+            .root , .neck_1_joint
+        ],
+        "head" : [
+            .neck_1_joint , .head_joint
+        ]
+
+    ]
+    
+    
+    //defining variables for angles
+    private var neckAngle: Float = 0.0
     
     
 
@@ -46,30 +72,43 @@ class ARSUIViewSquat: BodyARView {
         
         makeJointAngleVisible()
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            AudioServicesPlaySystemSound(1111)
+            self.checkForm()
+        }
+        
        // makeOtherJointsVisible()
 
+    }
+    
+    private func checkForm(){
+        //print("\n\n neck angle: \(neckAngle)\n\n")
+        
+//        //This makes a BUZZ sound when the neck is not straight
+//        if /*neckAngle > 179.00 || neckAngle < 175.00*/ neckAngle < 110.00 || neckAngle > 140.00 {
+//            AudioServicesPlaySystemSound(1111)
+//        }
+        let upperLegLegth = self.bodyTracker.distanceBetween2Joints(.right_leg_joint, .right_upLeg_joint)
+        print("Up leg legth: \(upperLegLegth)")
+        
+        let lowerLegLegth = self.bodyTracker.distanceBetween2Joints(.right_foot_joint, .right_leg_joint)
+        print("Down leg legth: \(lowerLegLegth)")
+        
+        let torsoLegth = self.bodyTracker.distanceBetween2Joints(.root, .neck_1_joint)
+        print("Torso legth: \(torsoLegth)")
     }
     
     
     ///This is an example for how to show one joint.
     private func makeJointAngleVisible(){
-        let rightElbowCircle = makeCircle(circleRadius: 20)
-        // ** HERE is the useful code: **
-        //How to attach views to the skeleton:
-        self.bodyTracker.attach(thisView: rightElbowCircle, toThisJoint: .right_forearm_joint)
+ 
         
-        //Use this to display the angle formed at this joint.
-        //See the call to "angleBetween3Joints" below.
-        rightElbowAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
-        rightElbowCircle.addSubview(rightElbowAngleLabel)
+        //Neck / head
+        let neckCircle = makeCircle(circleRadius: 20)
+        self.bodyTracker.attach(thisView: neckCircle, toThisJoint: .neck_1_joint)
         
-        //Right Shoudler
-        let rightShoulderCircle = makeCircle(circleRadius: 20)
-        self.bodyTracker.attach(thisView: rightShoulderCircle, toThisJoint: .right_shoulder_1_joint)
-        
-        rightShoulderAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
-        rightShoulderCircle.addSubview(rightShoulderAngleLabel)
-        
+        neckAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
+        neckCircle.addSubview(neckAngleLabel)
         
         //Right Leg
         let rightLegCircle = makeCircle(circleRadius: 20)
@@ -114,10 +153,9 @@ class ARSUIViewSquat: BodyARView {
     
     override func stopSession(){
         super.stopSession()
-           self.bodyTracker.destroy()
-            self.bodyTracker = nil
-           self.rightElbowAngleLabel.removeFromSuperview()
-        self.rightShoulderAngleLabel.removeFromSuperview()
+        self.bodyTracker.destroy()
+        self.bodyTracker = nil
+        self.neckAngleLabel.removeFromSuperview()
         self.rightLegAngleLabel.removeFromSuperview()
         self.rightKneeAngleLabel.removeFromSuperview()
   
@@ -153,38 +191,6 @@ class ARSUIViewSquat: BodyARView {
 
 
 
-//defining bones of the skeleton
-
-let squatBonesToShow : [String : [TwoDBodyJoint]] = [
-    "rightForearm" : [
-         .right_hand_joint , .right_forearm_joint
-    ],
-    "rightArm" : [
-        .right_forearm_joint , .right_shoulder_1_joint
-    ],
-    "rightShoulder" : [
-        .right_shoulder_1_joint , .neck_1_joint
-    ],
-    "rightFoot" : [
-        .right_foot_joint , .right_leg_joint
-    ],
-    "rightLeg" : [
-        .right_leg_joint , .right_upLeg_joint
-    ],
-    "rightHip" : [
-        .right_upLeg_joint , .root
-    ],
-    "spine" : [
-        .root , .neck_1_joint
-    ],
-    "head" : [
-        .neck_1_joint , .head_joint
-    ]
-
-]
-
-
-   
 
 
 extension ARSUIViewSquat: ARSessionDelegate {
@@ -192,26 +198,22 @@ extension ARSUIViewSquat: ARSessionDelegate {
     //For RealityKit 2 we should use a RealityKit System instead of this update function but that would be limited to devices running iOS 15.0+
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         
-        //-------------------------------- RIGHT ----------------------------
-        //Right Elbow
-        //The formatting rounds the number.
-        if let rightElbowJointAngle = self.bodyTracker.angleBetween3Joints(.right_hand_joint,
-                                                                           .right_forearm_joint,
-                                                                           .right_shoulder_1_joint) {
-            self.rightElbowAngleLabel.text = String(format: "%.0f", Float(rightElbowJointAngle))
+        //Add labels for neck, hip and knee joint angles
+
+        //Neck / head
+        if let headJointAngle = self.bodyTracker.angleBetween3Joints(.root,
+                                                                     .neck_1_joint,
+                                                                     .head_joint) {
+            self.neckAngleLabel.text = String(format: "%.0f", Float(headJointAngle))
+            neckAngle = Float(headJointAngle)
         }
         
-        //Right Shoulder
-        if let rightShoulderJointAngle = self.bodyTracker.angleBetween3Joints(.right_forearm_joint,
-                                                                              .right_shoulder_1_joint,
-                                                                              .neck_1_joint) {
-            self.rightShoulderAngleLabel.text = String(format: "%.0f", Float(rightShoulderJointAngle))
-        }
+       
         
-        //Right Leg
+        //Right Leg / Hip
         if let rightLegJointAngle = self.bodyTracker.angleBetween3Joints(.right_leg_joint,
-                                                                              .right_upLeg_joint,
-                                                                              .root) {
+                                                                         .root,
+                                                                         .neck_1_joint) {
             self.rightLegAngleLabel.text = String(format: "%.0f", Float(rightLegJointAngle))
         }
         
@@ -222,6 +224,8 @@ extension ARSUIViewSquat: ARSessionDelegate {
             self.rightKneeAngleLabel.text = String(format: "%.0f", Float(rightKneeJointAngle))
         }
         
+        
+        
         //draw line between 2 joints with the modified function fo angle between two joints
         
         squatBonesToShow.forEach{ bone in
@@ -230,6 +234,8 @@ extension ARSUIViewSquat: ARSessionDelegate {
             self.bodyTracker.attachLine(thisNewView: jointLine, ofThisBone: bone.key)
         
         }
+        
+        //checkForm()
         
        
     }

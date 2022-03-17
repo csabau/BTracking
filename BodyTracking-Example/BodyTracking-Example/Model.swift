@@ -14,7 +14,7 @@ public enum ARChoice: Int {
 //    case handTracking
 //    case face
     case twoD
-//    case threeD
+    case squat
 //    case bodyTrackedEntity
 //    case peopleOcclusion
 }
@@ -44,6 +44,9 @@ final class DataModel: ObservableObject {
 //
             case .twoD:
                 self.arView = ARSUIView2D(frame: .zero)
+                
+            case .squat:
+                self.arView = ARSUIViewSquat(frame: .zero)
 //            
             }
         }

@@ -100,7 +100,6 @@ public class BodyTracker2D {
         self.trackedViews[thisJoint] = thisView
         if thisView.superview == nil {
             arView.addSubview(thisView)
-           // print("circle to: \(thisView)")
         }
     }
     
@@ -108,7 +107,6 @@ public class BodyTracker2D {
         self.trackedBones[ofThisBone] = thisNewView
         if thisNewView.superview == nil {
             arView.addSubview(thisNewView)
-           // print("circle to: \(thisView)")
         }
     }
     
@@ -152,7 +150,6 @@ public class BodyTracker2D {
         //----------------------------------------------------------------------------------------------------
         
         for i in 0..<jointLandmarks.count {
-            //print("joint \(i) jointLadnmarks - X:\(jointLandmarks[i].x) Y:\(jointLandmarks[i].y) \n")
                 if jointLandmarks[i].x.isNaN || jointLandmarks[i].y.isNaN {
                     continue
                 }
@@ -167,10 +164,10 @@ public class BodyTracker2D {
                 let center = normalizedCenter.applying(CGAffineTransform.identity.scaledBy(x: self.arView.frame.width, y: self.arView.frame.height))
                 self.jointScreenPositions[i] = center
            
-          // print("joint ScreenPositions \(i):\(center) \n")
+          
             
         }
-       // print("Array of joints: \(String(describing: jointScreenPositions))")
+       
     }
     
     func updateTrackedViews(frame: ARFrame){
@@ -249,23 +246,21 @@ public class BodyTracker2D {
     }
     
     
-    //--------------------ADD Path between two joints ---------------
+//--------------------ADD Path between two joints --------------------------------------
     public func lineBetween2Joints(_ joint1: TwoDBodyJoint,
                                  _ joint2: TwoDBodyJoint) -> UIView {
         let joint1Index = joint1.rawValue
         let joint2Index = joint2.rawValue
 
-        //Make sure the joints we are looking for are included in jointScreenPositions.
-//        guard (jointScreenPositions.count - 1) >= max(joint1Index, joint2Index) else { return }
 
         let joint1ScreenPosition = jointScreenPositions[joint1Index]
         let joint2ScreenPosition = jointScreenPositions[joint2Index]
         
-        //print("joint 1 : \(joint1ScreenPosition)  , joint 2: \(joint2ScreenPosition)")
+
 
         return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start: joint1ScreenPosition, end: joint2ScreenPosition)
     }
-    
+//---------------------------------------------------------------------------------------------
 
     
 }
@@ -377,8 +372,6 @@ class DrawLine: UIView {
         path.addLine(to: end)
     }
         
-    
-//
     
     //create the CAShapeLayer Object because it's more versatile and can define stroke width. We assign the path of the BezierPath from above
     func simpleShapeLayer() {

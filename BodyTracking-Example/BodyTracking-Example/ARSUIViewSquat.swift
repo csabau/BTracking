@@ -13,19 +13,18 @@ import BodyTracking
 
 
 
-class ARSUIView2D: BodyARView {
+class ARSUIViewSquat: BodyARView {
     
 
     private var bodyTracker: BodyTracker2D!
     
     ///Use this to display the angle formed at this joint.
     ///See the call to "angleBetween3Joints" below.
-    private var angleLabel: UILabel!
+    private var rightElbowAngleLabel: UILabel!
+    private var rightShoulderAngleLabel: UILabel!
+    private var rightLegAngleLabel: UILabel!
+    private var rightKneeAngleLabel: UILabel!
     
-    private var startJoint1 = CGPoint(x: 0, y: 0)
-    private var endJoint1 = CGPoint(x: 40, y: 300)
-    private var startJoint2 = CGPoint(x: 500, y: 600)
-    private var endJoint2 = CGPoint(x: 200, y: 660)
     
     
 
@@ -45,15 +44,15 @@ class ARSUIView2D: BodyARView {
         guard let _ = try? runBodyTrackingConfig2D() else { return }
         self.session.delegate = self
         
-        makeRightElbowJointVisible()
+        makeJointAngleVisible()
         
-        makeOtherJointsVisible()
+       // makeOtherJointsVisible()
 
     }
     
     
     ///This is an example for how to show one joint.
-    private func makeRightElbowJointVisible(){
+    private func makeJointAngleVisible(){
         let rightElbowCircle = makeCircle(circleRadius: 20)
         // ** HERE is the useful code: **
         //How to attach views to the skeleton:
@@ -61,11 +60,33 @@ class ARSUIView2D: BodyARView {
         
         //Use this to display the angle formed at this joint.
         //See the call to "angleBetween3Joints" below.
-        angleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
-        rightElbowCircle.addSubview(angleLabel)
+        rightElbowAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
+        rightElbowCircle.addSubview(rightElbowAngleLabel)
+        
+        //Right Shoudler
+        let rightShoulderCircle = makeCircle(circleRadius: 20)
+        self.bodyTracker.attach(thisView: rightShoulderCircle, toThisJoint: .right_shoulder_1_joint)
+        
+        rightShoulderAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
+        rightShoulderCircle.addSubview(rightShoulderAngleLabel)
+        
+        
+        //Right Leg
+        let rightLegCircle = makeCircle(circleRadius: 20)
+        self.bodyTracker.attach(thisView: rightLegCircle, toThisJoint: .right_upLeg_joint)
+        
+        rightLegAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
+        rightLegCircle.addSubview(rightLegAngleLabel)
+        
+        //Right Knee
+        let rightKneeCircle = makeCircle(circleRadius: 20)
+        self.bodyTracker.attach(thisView: rightKneeCircle, toThisJoint: .right_leg_joint)
+        
+        rightKneeAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
+        rightKneeCircle.addSubview(rightKneeAngleLabel)
     }
     
-    
+/*
     ///This is an example for how to show multiple joints, iteratively.
     private func makeOtherJointsVisible(){
         //There are more joints you could attach views to, I'm just using these.
@@ -87,6 +108,7 @@ class ARSUIView2D: BodyARView {
         }
         
     }
+ */
     
 
     
@@ -94,7 +116,11 @@ class ARSUIView2D: BodyARView {
         super.stopSession()
            self.bodyTracker.destroy()
             self.bodyTracker = nil
-           self.angleLabel.removeFromSuperview()
+           self.rightElbowAngleLabel.removeFromSuperview()
+        self.rightShoulderAngleLabel.removeFromSuperview()
+        self.rightLegAngleLabel.removeFromSuperview()
+        self.rightKneeAngleLabel.removeFromSuperview()
+  
        }
     
     //setting the stroke colour to the branded GREEN and circle color to dark grey
@@ -129,7 +155,7 @@ class ARSUIView2D: BodyARView {
 
 //defining bones of the skeleton
 
-let bonesToShow : [String : [TwoDBodyJoint]] = [
+let squatBonesToShow : [String : [TwoDBodyJoint]] = [
     "rightForearm" : [
          .right_hand_joint , .right_forearm_joint
     ],
@@ -138,15 +164,6 @@ let bonesToShow : [String : [TwoDBodyJoint]] = [
     ],
     "rightShoulder" : [
         .right_shoulder_1_joint , .neck_1_joint
-    ],
-    "leftForearm" : [
-         .left_hand_joint , .left_forearm_joint
-    ],
-    "leftArm" : [
-        .left_forearm_joint , .left_shoulder_1_joint
-    ],
-    "leftShoulder" : [
-        .left_shoulder_1_joint , .neck_1_joint
     ],
     "rightFoot" : [
         .right_foot_joint , .right_leg_joint
@@ -157,43 +174,57 @@ let bonesToShow : [String : [TwoDBodyJoint]] = [
     "rightHip" : [
         .right_upLeg_joint , .root
     ],
-    "leftFoot" : [
-        .left_foot_joint , .left_leg_joint
-    ],
-    "lefttLeg" : [
-        .left_leg_joint , .left_upLeg_joint
-    ],
-    "leftHip" : [
-        .left_upLeg_joint , .root
-    ],
     "spine" : [
         .root , .neck_1_joint
     ],
     "head" : [
         .neck_1_joint , .head_joint
     ]
-    
+
 ]
 
 
    
 
 
-extension ARSUIView2D: ARSessionDelegate {
+extension ARSUIViewSquat: ARSessionDelegate {
     
     //For RealityKit 2 we should use a RealityKit System instead of this update function but that would be limited to devices running iOS 15.0+
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         
+        //-------------------------------- RIGHT ----------------------------
+        //Right Elbow
         //The formatting rounds the number.
-        if let jointAngle = self.bodyTracker.angleBetween3Joints(.right_hand_joint,
-                                                                .right_forearm_joint,
-                                                                .right_shoulder_1_joint) {
-            self.angleLabel.text = String(format: "%.0f", Float(jointAngle))
+        if let rightElbowJointAngle = self.bodyTracker.angleBetween3Joints(.right_hand_joint,
+                                                                           .right_forearm_joint,
+                                                                           .right_shoulder_1_joint) {
+            self.rightElbowAngleLabel.text = String(format: "%.0f", Float(rightElbowJointAngle))
+        }
+        
+        //Right Shoulder
+        if let rightShoulderJointAngle = self.bodyTracker.angleBetween3Joints(.right_forearm_joint,
+                                                                              .right_shoulder_1_joint,
+                                                                              .neck_1_joint) {
+            self.rightShoulderAngleLabel.text = String(format: "%.0f", Float(rightShoulderJointAngle))
+        }
+        
+        //Right Leg
+        if let rightLegJointAngle = self.bodyTracker.angleBetween3Joints(.right_leg_joint,
+                                                                              .right_upLeg_joint,
+                                                                              .root) {
+            self.rightLegAngleLabel.text = String(format: "%.0f", Float(rightLegJointAngle))
+        }
+        
+        //Right Knee
+        if let rightKneeJointAngle = self.bodyTracker.angleBetween3Joints(.right_foot_joint,
+                                                                              .right_leg_joint,
+                                                                              .right_upLeg_joint) {
+            self.rightKneeAngleLabel.text = String(format: "%.0f", Float(rightKneeJointAngle))
         }
         
         //draw line between 2 joints with the modified function fo angle between two joints
         
-        bonesToShow.forEach{ bone in
+        squatBonesToShow.forEach{ bone in
             self.bodyTracker.removeBone(bone.key)
             let jointLine = self.bodyTracker.lineBetween2Joints(bone.value[0], bone.value[1])
             self.bodyTracker.attachLine(thisNewView: jointLine, ofThisBone: bone.key)

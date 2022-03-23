@@ -231,6 +231,9 @@ public class BodyTracker2D {
         
         let joint1ScreenPosition = jointScreenPositions[joint1Index]
         let joint2ScreenPosition = jointScreenPositions[joint2Index]
+        
+      //  print("joint 1 Position X: \(joint1ScreenPosition.x) \n")
+      //  print("joint 1 Position: \(joint1ScreenPosition)")
 
         return angleBetween2Points(point1: joint1ScreenPosition,
                                          point2: joint2ScreenPosition)
@@ -245,6 +248,174 @@ public class BodyTracker2D {
         return CGFloat(angleInDegrees)
     }
     
+//    //------ Angle between 3 joints to test is the back is rounding ------
+//    public func angleBetween3Joints(_ joint1: TwoDBodyJoint,
+//                                   _ joint2: TwoDBodyJoint,
+//                                   _ joint3: TwoDBodyJoint) -> CGFloat? {
+//        let joint1Index = joint1.rawValue
+//        let joint2Index = joint2.rawValue
+//        let joint3Index = joint3.rawValue
+//
+//        //Make sure the joints we are looking for are included in jointScreenPositions.
+//        guard let maxIndex = [joint1Index, joint2Index, joint3Index].max(),
+//              (jointScreenPositions.count - 1) >= maxIndex else { return nil }
+//
+//        let joint1ScreenPosition = jointScreenPositions[joint1Index]
+//        let joint2ScreenPosition = jointScreenPositions[joint2Index]
+//        let joint3ScreenPosition = jointScreenPositions[joint3Index]
+//
+//        let vect1 = (joint1ScreenPosition - joint2ScreenPosition).simdVect()
+//        let vect2 = (joint3ScreenPosition - joint2ScreenPosition).simdVect()
+//
+//        let top = dot(vect1, vect2)
+//        let bottom = length(vect1) * length(vect2)
+//        let angleInRadians = CGFloat(acos(top / bottom))
+//        let angleInDegrees = (angleInRadians * 180) / .pi
+//        return angleInDegrees
+//    }
+    
+    
+    
+    
+    
+    
+    //-------------------- Calculate a spine joint at 1/4th of the distance between hip and shoulder --------------------------------------
+        public func spine_1_Line(_ joint1: TwoDBodyJoint,
+                                 _ joint2: CGPoint) -> UIView {
+            let joint1Index = joint1.rawValue
+            let joint2Index = joint2
+            
+          
+            
+            let joint1ScreenPosition = jointScreenPositions[joint1Index]
+            let joint2ScreenPosition = joint2Index
+
+            let fillColor: CGColor = #colorLiteral(red: 0.250980392156863, green: 0.250980392156863, blue: 0.250980392156863, alpha: 0.0)
+            let strokeColor: CGColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+
+
+            return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start:  joint1ScreenPosition, end: joint2ScreenPosition, fill: fillColor, stroke: strokeColor, strokeWidth: 3)
+        }
+    //---------------------------------------------------------------------------------------------
+    
+    
+    
+    //-------------------- return the coordinates of a joint in TwoDBodyJoint --------------------------------------
+        public func joint_coord(coordForJoint: TwoDBodyJoint) -> CGPoint {
+           
+            let joint1Index = coordForJoint.rawValue
+            let joint1ScreenPosition = jointScreenPositions[joint1Index]
+      
+            return joint1ScreenPosition
+        }
+    //---------------------------------------------------------------------------------------------
+    
+    
+    
+    
+    
+    //-------------------- Draw line between hip and spine 1 --------------------------------------
+        public func spine_joint(_ lowerJoint: TwoDBodyJoint,
+                                _ upperJoint: TwoDBodyJoint, dist: CGFloat, segment: CGFloat) -> CGPoint {
+           
+            let joint1Index = lowerJoint.rawValue
+            let joint2Index = upperJoint.rawValue
+           
+            
+            
+            let joint1ScreenPosition = jointScreenPositions[joint1Index]
+            let joint2ScreenPosition = jointScreenPositions[joint2Index]
+            var spineJoint = joint1ScreenPosition //we initialize the spine joint with the hip joint for reference purposes (turns spineJoint into a CGPoint)
+            
+            if joint1ScreenPosition.x <= joint2ScreenPosition.x  {
+                spineJoint.x = joint1ScreenPosition.x + (abs(joint1ScreenPosition.x - joint2ScreenPosition.x) / dist)
+            } else {
+                spineJoint.x = joint2ScreenPosition.x + (abs(joint1ScreenPosition.x - joint2ScreenPosition.x) / dist)
+                
+            }
+            
+            if joint1ScreenPosition.y >= joint2ScreenPosition.y {
+                spineJoint.y = abs(joint1ScreenPosition.y - (abs(joint1ScreenPosition.y - joint2ScreenPosition.y) / dist))
+            } else {
+                spineJoint.y = abs(joint2ScreenPosition.y - (abs(joint1ScreenPosition.y - joint2ScreenPosition.y) / dist))
+            }
+
+
+
+            
+
+           
+
+            return spineJoint
+        }
+    //---------------------------------------------------------------------------------------------
+    
+    
+    //---------- Create a ghost joint to calculate the sheer force from the shoulder --------------------------------------
+    //New function to determine the angle betwen the shoulder and a fixed point at the bottom of the screen modified to be offset to the right based on the .right_foot_joint, in order to create the path of a sheer force during a squat. The angle between the ground point and the shoulder should always be 0 (or close to 0) which will determine a perfect squat position
+    public func angleFromShoulderToGround() -> CGFloat? {
+        //joint 1 has to be the modified right foot joint which is planted on the ground
+        //joint 2 always has to be the shoulder joint
+        let joint1Index = 10 // right_foot_joint = 10
+        let joint2Index = 2 //right_shoulder_1_joint = 2
+        
+        let joint1ScreenPosition = jointScreenPositions[joint1Index] //this needs modified
+        let joint2ScreenPosition = jointScreenPositions[joint2Index] //this is accurate and we keep
+        var joint1ScreenPositionOffset = jointScreenPositions[joint1Index] //we initialise the offset so that reference can occur which enables us to access the x and y values
+        
+        joint1ScreenPositionOffset.x = joint1ScreenPosition.x + 10
+        joint1ScreenPositionOffset.y = UIScreen.main.bounds.size.height
+        
+//        print("joint 1 Position X: \(joint1ScreenPositionOffset.x) , Y: \(joint1ScreenPositionOffset.y)\n")
+//        print("joint 1 Position: \(joint1ScreenPosition)")
+        
+
+
+        return angleBetweenShoulderAndGround(point1: joint1ScreenPositionOffset,
+                                         point2: joint2ScreenPosition)
+    }
+    
+    private func angleBetweenShoulderAndGround(point1: CGPoint, point2: CGPoint) -> CGFloat {
+        let difference = point1 - point2
+        let angleInRadians = atan2(difference.y, difference.x)
+        var angleInDegrees = GLKMathRadiansToDegrees(Float(angleInRadians))
+        angleInDegrees -= 90
+        if (angleInDegrees < 0) { angleInDegrees += 360.0 }
+        return CGFloat(angleInDegrees)
+    }
+    
+    
+    
+    
+    ///AM I USING THIS?????
+//---------- Hard code parameters to calculate the 3 point angle at the neck / shoulder between the sheer force at the ground, the neck and the hip --------------------------------------
+    public func angleBetweenForceNeckHip() -> CGFloat? {
+        let joint1Index = 10 // right_foot_joint = 10 , to be offset x + 10
+        let joint2Index = 1 // neck joint = shoulder joint from the side neck_1_joint = 1
+        let joint3Index = 8 //right_upLeg_joint = 8
+        
+        //Make sure the joints we are looking for are included in jointScreenPositions.
+       // guard let maxIndex = [joint1Index, joint2Index, joint3Index].max(),
+             // (jointScreenPositions.count - 1) >= maxIndex else { return nil }
+        
+        let joint1ScreenPosition = jointScreenPositions[joint1Index] //this needs modified
+        let joint2ScreenPosition = jointScreenPositions[joint2Index] //this is the angle we want
+        let joint3ScreenPosition = jointScreenPositions[joint3Index] //this is the hip
+        var joint1ScreenPositionOffset = jointScreenPositions[joint1Index] //we initialise the offset so that reference can occur which enables us to access the x and y values
+        
+        joint1ScreenPositionOffset.x = joint1ScreenPosition.x + 10
+        joint1ScreenPositionOffset.y = UIScreen.main.bounds.size.height
+        
+        let vect1 = (joint1ScreenPositionOffset - joint2ScreenPosition).simdVect()
+        let vect2 = (joint3ScreenPosition - joint2ScreenPosition).simdVect()
+        
+        let top = dot(vect1, vect2)
+        let bottom = length(vect1) * length(vect2)
+        let angleInRadians = CGFloat(acos(top / bottom))
+        let angleInDegrees = (angleInRadians * 180) / .pi
+        return angleInDegrees
+    }
+    
     
 //--------------------ADD Path between two joints --------------------------------------
     public func lineBetween2Joints(_ joint1: TwoDBodyJoint,
@@ -256,12 +427,70 @@ public class BodyTracker2D {
         let joint1ScreenPosition = jointScreenPositions[joint1Index]
         let joint2ScreenPosition = jointScreenPositions[joint2Index]
         
+        let fillColor: CGColor = #colorLiteral(red: 0.250980392156863, green: 0.250980392156863, blue: 0.250980392156863, alpha: 0.0)
+        let strokeColor: CGColor = #colorLiteral(red: 0.670588235294118, green: 0.898039215686275, blue: 0.12156862745098, alpha: 1)
+        
 
 
-        return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start: joint1ScreenPosition, end: joint2ScreenPosition)
+        return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start: joint1ScreenPosition, end: joint2ScreenPosition, fill: fillColor, stroke: strokeColor, strokeWidth: 3.0)
+    }
+//---------------------------------------------------------------------------------------------
+    
+    
+//stroke: CGColor = (red: 0.670588235294118, green: 0.898039215686275, blue: 0.12156862745098, alpha: 1) //#colorLiteral
+    
+    
+    
+//-------------------- Draw Sheer Force Angle line between shoulder and foot --------------------------------------
+    public func sheerForceAngleLine() -> UIView {
+        let joint1Index = 10 // right_foot_joint = 10
+        let joint2Index = 2 //right_shoulder_1_joint = 2
+
+
+        let joint1ScreenPosition = jointScreenPositions[joint1Index] //this needs modified
+        let joint2ScreenPosition = jointScreenPositions[joint2Index] //this is accurate and we keep
+        var joint1ScreenPositionOffset = jointScreenPositions[joint1Index] //we initialise the offset so that reference can occur which enables us to access the x and y values
+        
+        joint1ScreenPositionOffset.x = joint1ScreenPosition.x + 10
+        joint1ScreenPositionOffset.y = joint1ScreenPosition.y - 10
+        
+        let fillColor: CGColor = #colorLiteral(red: 0.250980392156863, green: 0.250980392156863, blue: 0.250980392156863, alpha: 0.0)
+        let strokeColor: CGColor = #colorLiteral(red: 0.670588235294118, green: 0.898039215686275, blue: 0.12156862745098, alpha: 1)
+
+
+        return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start:  joint1ScreenPositionOffset, end: joint2ScreenPosition, fill: fillColor, stroke: strokeColor, strokeWidth: 4.5)
     }
 //---------------------------------------------------------------------------------------------
 
+//-------------------- Draw Sheer Force PATH for user self analysis --------------------------------------
+    public func sheerForcePath() -> UIView {
+        let joint1Index = 10 // right_foot_joint = 10
+        let joint2Index = 2 //right_shoulder_1_joint = 2
+
+
+        var joint1ScreenPosition = jointScreenPositions[joint1Index] //this is the ghost joint offsetted from the right foot joint
+        joint1ScreenPosition.x = joint1ScreenPosition.x + 10
+        joint1ScreenPosition.y = joint1ScreenPosition.y + 25
+        
+        var joint2ScreenPosition = jointScreenPositions[joint2Index] //this the point to be offset at the shoulder height and perpendicular to the ghost joint
+        joint2ScreenPosition.x = joint1ScreenPosition.x //so that the points are perpendicular
+        joint2ScreenPosition.y = joint2ScreenPosition.y - 30 //to raise is slightli higher for visibility
+        
+        let fillColor: CGColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 0)
+        let strokeColor: CGColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 0.5)
+
+
+        return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start:  joint1ScreenPosition, end: joint2ScreenPosition, fill: fillColor, stroke: strokeColor, strokeWidth: 70)
+    }
+//---------------------------------------------------------------------------------------------
+    
+    
+    
+    
+    
+    
+    
+    
 //--------------------Calculate distance between two joints --------------------------------------
         public func distanceBetween2Joints(_ joint1: TwoDBodyJoint,
                                      _ joint2: TwoDBodyJoint) -> CGFloat {
@@ -278,6 +507,44 @@ public class BodyTracker2D {
             
             return distance
         }
+//---------------------------------------------------------------------------------------------
+    
+    
+//--------------------Calculate distance between a joint and a screen edge --------------------------------------
+        public func distanceBetweenJointAndScreenEdge(_ joint: TwoDBodyJoint,
+                                                      _ edge: String) -> CGFloat {
+            let joint1Index = joint.rawValue
+            let joint1ScreenPosition = jointScreenPositions[joint1Index]
+            var joint2ScreenPosition = joint1ScreenPosition
+            
+            if edge == "top"{
+                joint2ScreenPosition.y = 0
+            }
+            if edge == "bottom"{
+                 joint2ScreenPosition.y = UIScreen.main.bounds.size.height
+            }
+            if edge == "middle"{
+                 joint2ScreenPosition.x = UIScreen.main.bounds.size.width / 2
+            }
+//            if edge == "left"{
+//                 joint2ScreenPosition.x = 0
+//            }
+//            if edge == "right"{
+//                 joint2ScreenPosition.x = UIScreen.main.bounds.size.width
+//            }
+           
+                
+            let xDist : CGFloat = joint2ScreenPosition.x - joint1ScreenPosition.x //[2]
+            let yDist : CGFloat = (joint2ScreenPosition.y - joint1ScreenPosition.y) //[3]
+            let distance : CGFloat = sqrt((xDist * xDist) + (yDist * yDist)) //[4]
+                
+            return distance
+        }
+
+
+           
+            
+        
 //---------------------------------------------------------------------------------------------
     
     
@@ -363,15 +630,20 @@ public enum TwoDBodyJoint: Int, CaseIterable {
 class DrawLine: UIView {
     
     var path: UIBezierPath!
-    var strokeColour: CGColor = #colorLiteral(red: 0.670588235294118, green: 0.898039215686275, blue: 0.12156862745098, alpha: 1)
-    var fillColour: CGColor = #colorLiteral(red: 0.250980392156863, green: 0.250980392156863, blue: 0.250980392156863, alpha: 0.0)
     var startPoint: CGPoint?
     var endPoint: CGPoint?
+    var strokeColour: CGColor?
+    var fillColour: CGColor?
+    var strokeWidth: CGFloat?
+
     
-  init(frame: CGRect, start: CGPoint, end: CGPoint){
+    init(frame: CGRect, start: CGPoint, end: CGPoint, fill: CGColor, stroke: CGColor, strokeWidth: CGFloat){
       
       self.startPoint = start
       self.endPoint = end
+      self.fillColour = fill
+      self.strokeColour = stroke
+      self.strokeWidth = strokeWidth
       super.init(frame: frame)
       
       simpleShapeLayer()
@@ -398,9 +670,10 @@ class DrawLine: UIView {
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = self.path.cgPath
         
+        
         shapeLayer.fillColor = fillColour
         shapeLayer.strokeColor = strokeColour
-        shapeLayer.lineWidth = 4.0
+        shapeLayer.lineWidth = strokeWidth!
         
         self.layer.addSublayer(shapeLayer)
         
@@ -409,3 +682,5 @@ class DrawLine: UIView {
     
     
 }
+
+

@@ -81,9 +81,8 @@ class ARSUIViewSquat: BodyARView {
     
     
     private var headInView: Bool = false
-    private var middleCheck: Bool = false
+    private var footInView: Bool = false
     private var bodyInMiddle: Bool = false
-    private var readyToSquat: Bool = false
     
     
     
@@ -119,11 +118,11 @@ class ARSUIViewSquat: BodyARView {
         guard let _ = try? runBodyTrackingConfig2D() else { return }
         self.session.delegate = self
         
-//        //run calibrating function of scanBody() before checkForm() can be performed
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
-//            AudioServicesPlaySystemSound(1025)
-//            self.bodySetup()
-//        }
+        //run calibrating function of scanBody() before checkForm() can be performed
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+            AudioServicesPlaySystemSound(1025)
+            self.bodySetup()
+        }
         
         makeJointAngleVisible()
         
@@ -143,43 +142,18 @@ class ARSUIViewSquat: BodyARView {
     //Scanning the body to determine limb RATIOS (to calibrate the angle error based on the body type)
     private func bodySetup(){
         
-//        //set up camera tilt based on foot level?
-//        if distBottom > 60 {
-//            headInView = true
-//            AudioServicesPlaySystemSound(1111) //your body is in frame
+        ///This is working , just turned OFF for now
+//        //Check if head is in screen enough
+//        if self.distTop < 100 {
+//            self.headInView = false
+//            AudioServicesPlaySystemSound(1111)
+//        } else {
+//            self.headInView = true
 //        }
-        
-        if !readyToSquat {
-            //Check if head is in screen enough
-            if !headInView {       //walk to your left, away from the device so that your body gets in the frame
-                if distTop > 100 {
-                    headInView = true
-                    AudioServicesPlaySystemSound(1111) //your body is in frame
-                }
-            } else if !bodyInMiddle {    //the headInView is now True, so we check that the body is in the middle
-                
-                if !middleCheck { //body is too far from the middle
-                    AudioServicesPlaySystemSound(1024) //slowly step forwards or backwards to get in line with your device
-                    middleCheck = true
-                }
-                
-                if distMiddle < 30 {
-                    AudioServicesPlaySystemSound(1111) //your body is now in the middle
-                    bodyInMiddle = true
-                    
-                    readyToSquat = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                       AudioServicesPlaySystemSound(1025) // you are now ready to squat
-                   }
-                    
-                }
-            }
-        }
-        
-        
-        
-        
-
+//        if self.headInView == true/* && self.footInView == true && self.bodyInMiddle == true */{
+//            AudioServicesPlaySystemSound(1112)
+//        }
+        /// down to here
 
         
         
@@ -266,9 +240,28 @@ class ARSUIViewSquat: BodyARView {
         } else {
             self.frameCount = 0
             self.neckAngleErrorDetected = false
+           // self.hipAngleErrorDetected = false
         }
         
         
+        
+        //             //OLD function based on the HIP and KNEE angle difference in margin of error
+        //            //Checking Hip and Knee angles
+        //            if(!self.hipAngleErrorDetected) {
+        //                //If the absolute value of the difference between the angles is outside the margin of error determined by the limbs ratio
+        //                if abs(hipAngle - kneeAngle) > self.hipToKneeAngleMarginOfError && hipAngle  > kneeAngle {
+        //                    //HIP angle WIDE - if the Body is too upright - the person needs to bend / fold from the hips a bit more
+        //                    //if hipAngle  > kneeAngle  {
+        //                        AudioServicesPlaySystemSound(1021)
+        //                   // } else {
+        //                        //KNEE angle WIDE - otherwise the person might be too folded forward or needs to bend the knees a bit more
+        //                    //    AudioServicesPlaySystemSound(1024)
+        //                    //}
+        //                }
+        //
+        //
+        //                self.hipAngleErrorDetected = true
+        //            }
         
 
         
@@ -286,23 +279,23 @@ class ARSUIViewSquat: BodyARView {
     ///This is an example for how to show one joint.
     private func makeJointAngleVisible(){
         
-//        //Torso Length
-//        torsoLengthLabelNeckToHip = UILabel(frame: CGRect(origin: CGPoint(x: 10, y: 400), size: CGSize(width: 100, height: 50))) //neck to hip
-//        self.bodyTracker.attachLine(thisNewView: torsoLengthLabelNeckToHip, ofThisBone: "torso")
-//        torsoLengthLabelShoulderToHip = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 15), size: CGSize(width: 100, height: 50))) // shoulder to hip
-//        torsoLengthLabelNeckToHip.addSubview(torsoLengthLabelShoulderToHip)
-//        torsoAngleLabelShoulderToHip = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 40), size: CGSize(width: 100, height: 50))) // angle shoulder to hip
-//        torsoLengthLabelNeckToHip.addSubview(torsoAngleLabelShoulderToHip)
-//        // spine 1 joint coordinates
-//        hipLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 70), size: CGSize(width: 700, height: 50)))
-//        shoulderLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 85), size: CGSize(width: 700, height: 50)))
-//
-//        spine_1Label = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 110), size: CGSize(width: 700, height: 50)))
-//        spineAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 140), size: CGSize(width: 700, height: 50)))
-//        torsoLengthLabelNeckToHip.addSubview(shoulderLabel)
-//        torsoLengthLabelNeckToHip.addSubview(hipLabel)
-//        torsoLengthLabelNeckToHip.addSubview(spine_1Label)
-//        torsoLengthLabelNeckToHip.addSubview(spineAngleLabel)
+        //Torso Length
+        torsoLengthLabelNeckToHip = UILabel(frame: CGRect(origin: CGPoint(x: 10, y: 400), size: CGSize(width: 100, height: 50))) //neck to hip
+        self.bodyTracker.attachLine(thisNewView: torsoLengthLabelNeckToHip, ofThisBone: "torso")
+        torsoLengthLabelShoulderToHip = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 15), size: CGSize(width: 100, height: 50))) // shoulder to hip
+        torsoLengthLabelNeckToHip.addSubview(torsoLengthLabelShoulderToHip)
+        torsoAngleLabelShoulderToHip = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 40), size: CGSize(width: 100, height: 50))) // angle shoulder to hip
+        torsoLengthLabelNeckToHip.addSubview(torsoAngleLabelShoulderToHip)
+        // spine 1 joint coordinates
+        hipLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 70), size: CGSize(width: 700, height: 50)))
+        shoulderLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 85), size: CGSize(width: 700, height: 50)))
+        
+        spine_1Label = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 110), size: CGSize(width: 700, height: 50)))
+        spineAngleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 140), size: CGSize(width: 700, height: 50)))
+        torsoLengthLabelNeckToHip.addSubview(shoulderLabel)
+        torsoLengthLabelNeckToHip.addSubview(hipLabel)
+        torsoLengthLabelNeckToHip.addSubview(spine_1Label)
+        torsoLengthLabelNeckToHip.addSubview(spineAngleLabel)
  
  
         
@@ -377,21 +370,21 @@ class ARSUIViewSquat: BodyARView {
     }
     
 
-//    ///This is an example for how to show multiple joints, iteratively.
-//    private func makeOtherJointsVisible(){
-//        //There are more joints you could attach views to, I'm just using these.
-//        let jointsToShow : [TwoDBodyJoint] = [/*.head_joint,*/ .right_foot_joint]
-//
-//
-//        //Another way to attach views to the skeletion, but iteratively this time:
-//        //CHANGE THE WAY THE CIRCLES LOOK
-//        jointsToShow.forEach { joint in
-//            let circle = makeCircle(circleRadius: 40)
-//            self.bodyTracker.attach(thisView: circle, toThisJoint: joint)
-//
-//        }
-//
-//    }
+    ///This is an example for how to show multiple joints, iteratively.
+    private func makeOtherJointsVisible(){
+        //There are more joints you could attach views to, I'm just using these.
+        let jointsToShow : [TwoDBodyJoint] = [/*.head_joint,*/ .right_foot_joint]
+  
+        
+        //Another way to attach views to the skeletion, but iteratively this time:
+        //CHANGE THE WAY THE CIRCLES LOOK
+        jointsToShow.forEach { joint in
+            let circle = makeCircle(circleRadius: 40)
+            self.bodyTracker.attach(thisView: circle, toThisJoint: joint)
+           
+        }
+        
+    }
  
     
 
@@ -455,15 +448,15 @@ extension ARSUIViewSquat: ARSessionDelegate {
         
       
         
-//        //torso distance to test back overextension
-//        let neckToHipLegth = self.bodyTracker.distanceBetween2Joints(.neck_1_joint, .right_upLeg_joint)
-//        self.torsoLengthLabelNeckToHip.text = String(format: "%.0f", Float(neckToHipLegth))
-//
-//        let shoulderToHipLegth = self.bodyTracker.distanceBetween2Joints(.right_shoulder_1_joint, .right_upLeg_joint)
-//        self.torsoLengthLabelShoulderToHip.text = String(format: "%.0f", Float(shoulderToHipLegth))
-//
-//        let hipToShoulderAngle = self.bodyTracker.angleFrom2Joints(.right_upLeg_joint, .right_shoulder_1_joint)
-//        self.torsoAngleLabelShoulderToHip.text = String(format: "%.0f", Float(hipToShoulderAngle!))
+        //torso distance to test back overextension
+        let neckToHipLegth = self.bodyTracker.distanceBetween2Joints(.neck_1_joint, .right_upLeg_joint)
+        self.torsoLengthLabelNeckToHip.text = String(format: "%.0f", Float(neckToHipLegth))
+        
+        let shoulderToHipLegth = self.bodyTracker.distanceBetween2Joints(.right_shoulder_1_joint, .right_upLeg_joint)
+        self.torsoLengthLabelShoulderToHip.text = String(format: "%.0f", Float(shoulderToHipLegth))
+        
+        let hipToShoulderAngle = self.bodyTracker.angleFrom2Joints(.right_upLeg_joint, .right_shoulder_1_joint)
+        self.torsoAngleLabelShoulderToHip.text = String(format: "%.0f", Float(hipToShoulderAngle!))
         
         
         //calculating the Sheer force angle
@@ -486,7 +479,7 @@ extension ARSUIViewSquat: ARSessionDelegate {
         
 
         
-        //draw BONES = line between 2 joints with the modified function fo angle between two joints
+        //draw line between 2 joints with the modified function fo angle between two joints
         
         squatBonesToShow.forEach{ bone in
             self.bodyTracker.removeBone(bone.key)
@@ -504,29 +497,29 @@ extension ARSUIViewSquat: ARSessionDelegate {
         self.bodyTracker.attachLine(thisNewView: sheerForceLine, ofThisBone: "sheerForce")
         
         
-//        //--------------------------------------------------------------------------------------
-//        //read the spine 1 joint
-//        self.spine_1_joint = self.bodyTracker.spine_joint(.right_upLeg_joint, .right_shoulder_1_joint, dist: 2, segment: 600)
-//        self.spine_1Label.text = NSCoder.string(for: spine_1_joint)
-//        
-//       
-//        let spineAngle = self.bodyTracker.angleBetween3Joints(.root,
-//                                                              .neck_1_joint,
-//                                                              .right_upLeg_joint)
-//        self.spineAngleLabel.text = String(format: "%.0f", Float(spineAngle ?? 0))
-//        
-//        //read TwoDBodyJoint coords
-//        self.shoulderLabel.text = NSCoder.string(for: self.bodyTracker.joint_coord(coordForJoint: .right_shoulder_1_joint))
-//        self.hipLabel.text = NSCoder.string(for: self.bodyTracker.joint_coord(coordForJoint: .right_upLeg_joint))
-//        
-//        
-//        
-//        
-//        
-//        //drawing spine 1 line
-//        self.bodyTracker.removeBone("spine1")
-//        let spine1Line = self.bodyTracker.spine_1_Line(.right_upLeg_joint, self.spine_1_joint)
-//        self.bodyTracker.attachLine(thisNewView: spine1Line, ofThisBone: "spine1")
+        //--------------------------------------------------------------------------------------
+        //read the spine 1 joint
+        self.spine_1_joint = self.bodyTracker.spine_joint(.right_upLeg_joint, .right_shoulder_1_joint, dist: 2, segment: 600)
+        self.spine_1Label.text = NSCoder.string(for: spine_1_joint)
+        
+       
+        let spineAngle = self.bodyTracker.angleBetween3Joints(.root,
+                                                              .neck_1_joint,
+                                                              .right_upLeg_joint)
+        self.spineAngleLabel.text = String(format: "%.0f", Float(spineAngle ?? 0))
+        
+        //read TwoDBodyJoint coords
+        self.shoulderLabel.text = NSCoder.string(for: self.bodyTracker.joint_coord(coordForJoint: .right_shoulder_1_joint))
+        self.hipLabel.text = NSCoder.string(for: self.bodyTracker.joint_coord(coordForJoint: .right_upLeg_joint))
+        
+        
+        
+        
+        
+        //drawing spine 1 line
+        self.bodyTracker.removeBone("spine1")
+        let spine1Line = self.bodyTracker.spine_1_Line(.right_upLeg_joint, self.spine_1_joint)
+        self.bodyTracker.attachLine(thisNewView: spine1Line, ofThisBone: "spine1")
         
         
         
@@ -546,7 +539,7 @@ extension ARSUIViewSquat: ARSessionDelegate {
         distBottom = Float(bottomSpace)
         
         //the MIDDLE
-        let middleSpace = self.bodyTracker.distanceBetweenJointAndScreenEdge(.right_foot_joint, "middle")
+        let middleSpace = abs(self.bodyTracker.distanceBetweenJointAndScreenEdge(.right_shoulder_1_joint, "middle"))
         self.middleConsoleLabel.text = String(format: "%.0f", Float(middleSpace))
         distMiddle = Float(middleSpace)
  

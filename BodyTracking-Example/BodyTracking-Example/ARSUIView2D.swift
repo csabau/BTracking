@@ -21,6 +21,8 @@ class ARSUIView2D: BodyARView {
     ///Use this to display the angle formed at this joint.
     ///See the call to "angleBetween3Joints" below.
     private var angleLabel: UILabel!
+    private var forceLabel: UILabel!
+    
     
     private var startJoint1 = CGPoint(x: 0, y: 0)
     private var endJoint1 = CGPoint(x: 40, y: 300)
@@ -52,6 +54,10 @@ class ARSUIView2D: BodyARView {
     }
     
     
+
+
+    
+    
     ///This is an example for how to show one joint.
     private func makeRightElbowJointVisible(){
         let rightElbowCircle = makeCircle(circleRadius: 20)
@@ -62,7 +68,13 @@ class ARSUIView2D: BodyARView {
         //Use this to display the angle formed at this joint.
         //See the call to "angleBetween3Joints" below.
         angleLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
+        
         rightElbowCircle.addSubview(angleLabel)
+        
+        let forceCircle = makeCircle(circleRadius: 20)
+        self.bodyTracker.attach(thisView: forceCircle, toThisJoint: .head_joint)
+        forceLabel = UILabel(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 100, height: 50)))
+        forceCircle.addSubview(forceLabel)
     }
     
     
@@ -72,7 +84,7 @@ class ARSUIView2D: BodyARView {
         let jointsToShow : [TwoDBodyJoint] = [.right_hand_joint, .right_shoulder_1_joint,
                                            .left_forearm_joint, .left_hand_joint,
                                            .left_shoulder_1_joint,
-                                           .head_joint, .neck_1_joint,
+                                           /*.head_joint,*/ .neck_1_joint,
                                               .root, .right_upLeg_joint, .right_leg_joint,
                                               .right_foot_joint, .left_upLeg_joint, .left_leg_joint,
                                            .left_foot_joint]
@@ -200,6 +212,19 @@ extension ARSUIView2D: ARSessionDelegate {
         
         }
         
+        
+        
+        
+        let angle = self.bodyTracker.angleFromShoulderToGround()!
+        self.forceLabel.text = String(format: "%.0f", Float(angle))
+        //print("angle between shoulder and base \(String(format: "%.0f", Float(angle)))")
+        
+        
+        
        
     }
 }
+
+
+
+

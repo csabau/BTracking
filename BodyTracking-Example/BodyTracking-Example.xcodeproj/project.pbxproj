@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -23,9 +23,10 @@
 		55BFE6A125D2268B00E2BB8C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFE69925D2268B00E2BB8C /* AppDelegate.swift */; };
 		55BFE6A225D2268B00E2BB8C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFE69A25D2268B00E2BB8C /* ContentView.swift */; };
 		55D7BA9627409C9C000E4569 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D7BA9527409C9C000E4569 /* Utilities.swift */; };
-		A70D4A2227D521FB0082CFB6 /* BodyTracking in Frameworks */ = {isa = PBXBuildFile; productRef = A70D4A2127D521FB0082CFB6 /* BodyTracking */; };
+		A7443AE427EB4921009C1875 /* ControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AE327EB4921009C1875 /* ControlView.swift */; };
+		A7443AE627EB7274009C1875 /* DeviceSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AE527EB7273009C1875 /* DeviceSetupView.swift */; };
+		A7443AE827EB7FC6009C1875 /* GyroController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AE727EB7FC6009C1875 /* GyroController.swift */; };
 		A767F7D427E32B2500D35C54 /* ARSUIViewSquat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A767F7D327E32B2500D35C54 /* ARSUIViewSquat.swift */; };
-		A78F9DCC27D8AF0500B97B27 /* RKPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78F9DCB27D8AF0500B97B27 /* RKPath.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,8 +48,10 @@
 		55BFE69A25D2268B00E2BB8C /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		55BFE69B25D2268B00E2BB8C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55D7BA9527409C9C000E4569 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		A7443AE327EB4921009C1875 /* ControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlView.swift; sourceTree = "<group>"; };
+		A7443AE527EB7273009C1875 /* DeviceSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSetupView.swift; sourceTree = "<group>"; };
+		A7443AE727EB7FC6009C1875 /* GyroController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyroController.swift; sourceTree = "<group>"; };
 		A767F7D327E32B2500D35C54 /* ARSUIViewSquat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSUIViewSquat.swift; sourceTree = "<group>"; };
-		A78F9DCB27D8AF0500B97B27 /* RKPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKPath.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +59,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A70D4A2227D521FB0082CFB6 /* BodyTracking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,9 +108,11 @@
 				550F68DA2655F555003F2808 /* README.md */,
 				55BFE69325D2268B00E2BB8C /* Model.swift */,
 				55BFE69A25D2268B00E2BB8C /* ContentView.swift */,
+				A7443AE527EB7273009C1875 /* DeviceSetupView.swift */,
+				A7443AE327EB4921009C1875 /* ControlView.swift */,
+				A7443AE727EB7FC6009C1875 /* GyroController.swift */,
 				55AFF6632612798200D05AE3 /* ARSUIView2D.swift */,
 				A767F7D327E32B2500D35C54 /* ARSUIViewSquat.swift */,
-				A78F9DCB27D8AF0500B97B27 /* RKPath.swift */,
 				55AE082C264C2DCE00227F35 /* BodyARView.swift */,
 				55BFE69925D2268B00E2BB8C /* AppDelegate.swift */,
 				55BFE69425D2268B00E2BB8C /* Assets.xcassets */,
@@ -155,7 +159,6 @@
 			);
 			name = "BodyTracking-Example";
 			packageProductDependencies = (
-				A70D4A2127D521FB0082CFB6 /* BodyTracking */,
 			);
 			productName = "Sound Localization";
 			productReference = 55BFE66525D2200F00E2BB8C /* BodyTracking-Example.app */;
@@ -185,7 +188,6 @@
 			);
 			mainGroup = 55BFE65C25D2200F00E2BB8C;
 			packageReferences = (
-				A70D4A2027D521FB0082CFB6 /* XCRemoteSwiftPackageReference "BodyTracking" */,
 			);
 			productRefGroup = 55BFE66625D2200F00E2BB8C /* Products */;
 			projectDirPath = "";
@@ -220,10 +222,12 @@
 			files = (
 				55BFE6A125D2268B00E2BB8C /* AppDelegate.swift in Sources */,
 				550F68E42655FE03003F2808 /* ARView+Occlusion.swift in Sources */,
+				A7443AE427EB4921009C1875 /* ControlView.swift in Sources */,
 				A767F7D427E32B2500D35C54 /* ARSUIViewSquat.swift in Sources */,
+				A7443AE627EB7274009C1875 /* DeviceSetupView.swift in Sources */,
 				55BFE6A225D2268B00E2BB8C /* ContentView.swift in Sources */,
-				A78F9DCC27D8AF0500B97B27 /* RKPath.swift in Sources */,
 				550F68E72655FE03003F2808 /* BodyTrackedEntity+Extension.swift in Sources */,
+				A7443AE827EB7FC6009C1875 /* GyroController.swift in Sources */,
 				55AE082D264C2DCE00227F35 /* BodyARView.swift in Sources */,
 				55AFF6642612798200D05AE3 /* ARSUIView2D.swift in Sources */,
 				55BFE69C25D2268B00E2BB8C /* Model.swift in Sources */,
@@ -417,25 +421,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A70D4A2027D521FB0082CFB6 /* XCRemoteSwiftPackageReference "BodyTracking" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Reality-Dev/BodyTracking";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A70D4A2127D521FB0082CFB6 /* BodyTracking */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A70D4A2027D521FB0082CFB6 /* XCRemoteSwiftPackageReference "BodyTracking" */;
-			productName = BodyTracking;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 55BFE65D25D2200F00E2BB8C /* Project object */;
 }

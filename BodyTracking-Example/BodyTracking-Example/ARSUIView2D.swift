@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 import ARKit
 import RealityKit
-import BodyTracking
+///import BodyTracking
 
 
 
@@ -22,6 +22,7 @@ class ARSUIView2D: BodyARView {
     ///See the call to "angleBetween3Joints" below.
     private var angleLabel: UILabel!
     private var forceLabel: UILabel!
+    
     
     
     private var startJoint1 = CGPoint(x: 0, y: 0)

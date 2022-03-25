@@ -5,7 +5,9 @@ import CoreGraphics
 import ARKit
 import UIKit
 import SwiftUI
-
+import CoreMotion
+var motion = CMMotionManager()
+public var gyrox: Double = 0.0
 
 
 public extension ARView {
@@ -279,23 +281,23 @@ public class BodyTracker2D {
     
     
     
-    //-------------------- Calculate a spine joint at 1/4th of the distance between hip and shoulder --------------------------------------
-        public func spine_1_Line(_ joint1: TwoDBodyJoint,
-                                 _ joint2: CGPoint) -> UIView {
-            let joint1Index = joint1.rawValue
-            let joint2Index = joint2
-            
-          
-            
-            let joint1ScreenPosition = jointScreenPositions[joint1Index]
-            let joint2ScreenPosition = joint2Index
-
-            let fillColor: CGColor = #colorLiteral(red: 0.250980392156863, green: 0.250980392156863, blue: 0.250980392156863, alpha: 0.0)
-            let strokeColor: CGColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-
-
-            return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start:  joint1ScreenPosition, end: joint2ScreenPosition, fill: fillColor, stroke: strokeColor, strokeWidth: 3)
-        }
+//    //-------------------- Calculate a spine joint at 1/4th of the distance between hip and shoulder --------------------------------------
+//        public func spine_1_Line(_ joint1: TwoDBodyJoint,
+//                                 _ joint2: CGPoint) -> UIView {
+//            let joint1Index = joint1.rawValue
+//            let joint2Index = joint2
+//
+//
+//
+//            let joint1ScreenPosition = jointScreenPositions[joint1Index]
+//            let joint2ScreenPosition = joint2Index
+//
+//            let fillColor: CGColor = #colorLiteral(red: 0.250980392156863, green: 0.250980392156863, blue: 0.250980392156863, alpha: 0.0)
+//            let strokeColor: CGColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+//
+//
+//            return DrawLine(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height), start:  joint1ScreenPosition, end: joint2ScreenPosition, fill: fillColor, stroke: strokeColor, strokeWidth: 3)
+//        }
     //---------------------------------------------------------------------------------------------
     
     
@@ -315,39 +317,39 @@ public class BodyTracker2D {
     
     
     //-------------------- Draw line between hip and spine 1 --------------------------------------
-        public func spine_joint(_ lowerJoint: TwoDBodyJoint,
-                                _ upperJoint: TwoDBodyJoint, dist: CGFloat, segment: CGFloat) -> CGPoint {
-           
-            let joint1Index = lowerJoint.rawValue
-            let joint2Index = upperJoint.rawValue
-           
-            
-            
-            let joint1ScreenPosition = jointScreenPositions[joint1Index]
-            let joint2ScreenPosition = jointScreenPositions[joint2Index]
-            var spineJoint = joint1ScreenPosition //we initialize the spine joint with the hip joint for reference purposes (turns spineJoint into a CGPoint)
-            
-            if joint1ScreenPosition.x <= joint2ScreenPosition.x  {
-                spineJoint.x = joint1ScreenPosition.x + (abs(joint1ScreenPosition.x - joint2ScreenPosition.x) / dist)
-            } else {
-                spineJoint.x = joint2ScreenPosition.x + (abs(joint1ScreenPosition.x - joint2ScreenPosition.x) / dist)
-                
-            }
-            
-            if joint1ScreenPosition.y >= joint2ScreenPosition.y {
-                spineJoint.y = abs(joint1ScreenPosition.y - (abs(joint1ScreenPosition.y - joint2ScreenPosition.y) / dist))
-            } else {
-                spineJoint.y = abs(joint2ScreenPosition.y - (abs(joint1ScreenPosition.y - joint2ScreenPosition.y) / dist))
-            }
-
-
-
-            
-
-           
-
-            return spineJoint
-        }
+//        public func spine_joint(_ lowerJoint: TwoDBodyJoint,
+//                                _ upperJoint: TwoDBodyJoint, dist: CGFloat, segment: CGFloat) -> CGPoint {
+//
+//            let joint1Index = lowerJoint.rawValue
+//            let joint2Index = upperJoint.rawValue
+//
+//
+//
+//            let joint1ScreenPosition = jointScreenPositions[joint1Index]
+//            let joint2ScreenPosition = jointScreenPositions[joint2Index]
+//            var spineJoint = joint1ScreenPosition //we initialize the spine joint with the hip joint for reference purposes (turns spineJoint into a CGPoint)
+//
+//            if joint1ScreenPosition.x <= joint2ScreenPosition.x  {
+//                spineJoint.x = joint1ScreenPosition.x + (abs(joint1ScreenPosition.x - joint2ScreenPosition.x) / dist)
+//            } else {
+//                spineJoint.x = joint2ScreenPosition.x + (abs(joint1ScreenPosition.x - joint2ScreenPosition.x) / dist)
+//
+//            }
+//
+//            if joint1ScreenPosition.y >= joint2ScreenPosition.y {
+//                spineJoint.y = abs(joint1ScreenPosition.y - (abs(joint1ScreenPosition.y - joint2ScreenPosition.y) / dist))
+//            } else {
+//                spineJoint.y = abs(joint2ScreenPosition.y - (abs(joint1ScreenPosition.y - joint2ScreenPosition.y) / dist))
+//            }
+//
+//
+//
+//
+//
+//
+//
+//            return spineJoint
+//        }
     //---------------------------------------------------------------------------------------------
     
     
@@ -547,6 +549,24 @@ public class BodyTracker2D {
         
 //---------------------------------------------------------------------------------------------
     
+    
+    ///GYROSCOPE
+    public func MyGyro() -> Double {
+        motion.gyroUpdateInterval = 0.5
+        motion.startGyroUpdates(to: OperationQueue.current!) { (data, error) in
+            if let trueData = data{
+                gyrox = trueData.rotationRate.x
+            }
+            
+        }
+        return gyrox
+    }
+        
+        
+        
+        
+        
+        //-------------------
     
 }
 

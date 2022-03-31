@@ -14,31 +14,27 @@ import CoreMotion
 
 private var bodyTracker: BodyTracker2D!
 
-
-
-
 struct DeviceSetupView: View {
     @Binding var showDeviceSetup: Bool
 
     var body: some View {
 
         NavigationView {
-            ScrollView(showsIndicators: false) {
+//            ScrollView(showsIndicators: false) {
                 
-                showBubbleLevel()
+                BubbleLevelWrapper()
 //                //Gridviews with thumbnails
 //                RecentsGrid(showBrowse: $showBrowse)
 //
 //                ModelsByCategory(showBrowse: $showBrowse)
                 //ViewController()
 
-                Text ("title")
-                                .font(.title2).bold()
-                                .padding(.leading, 22)
-                                .padding(.top, 10)
-
-            }
-
+//                Text ("title")
+//                                .font(.title2).bold()
+//                                .padding(.leading, 22)
+//                                .padding(.top, 10)
+//
+//            }
             .navigationBarTitle(Text("Device Setup"), displayMode: .large)
             .navigationBarItems(trailing:
                 Button(action: {
@@ -46,33 +42,28 @@ struct DeviceSetupView: View {
             }) {
                 Text("Done").bold()
             })
-            
-           
         }
-        
-        
     }
-
-
-}
+} // END of the VIEW
 
 
 
 
 //-----wrapping UIViewController inside UIVIewRepresentable to use it in the View of the sheet
 
-struct showBubbleLevel: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
+struct BubbleLevelWrapper: UIViewControllerRepresentable {
+    
+    typealias UIViewControllerType = BubbleLevel
+    
+    func makeUIViewController(context: UIViewControllerRepresentableContext<BubbleLevelWrapper>) -> BubbleLevelWrapper.UIViewControllerType {
         return BubbleLevel()
     }
     
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        uiViewController.viewDidLoad()
+    func updateUIViewController(_ uiViewController: BubbleLevelWrapper.UIViewControllerType, context: UIViewControllerRepresentableContext<BubbleLevelWrapper>) {
+        
+        
     }
     
-    typealias UIViewControllerType = UIViewController
-    
-  
 }
 
 //-------------------------------------------------------------------------------------

@@ -25,7 +25,8 @@
 		55D7BA9627409C9C000E4569 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D7BA9527409C9C000E4569 /* Utilities.swift */; };
 		A7443AE427EB4921009C1875 /* ControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AE327EB4921009C1875 /* ControlView.swift */; };
 		A7443AE627EB7274009C1875 /* DeviceSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AE527EB7273009C1875 /* DeviceSetupView.swift */; };
-		A7443AE827EB7FC6009C1875 /* GyroController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AE727EB7FC6009C1875 /* GyroController.swift */; };
+		A7443AEC27F4C920009C1875 /* VideoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AEB27F4C91F009C1875 /* VideoHelper.swift */; };
+		A7443AEE27F4C937009C1875 /* PlayVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7443AED27F4C936009C1875 /* PlayVideoViewController.swift */; };
 		A767F7D427E32B2500D35C54 /* ARSUIViewSquat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A767F7D327E32B2500D35C54 /* ARSUIViewSquat.swift */; };
 /* End PBXBuildFile section */
 
@@ -50,7 +51,8 @@
 		55D7BA9527409C9C000E4569 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		A7443AE327EB4921009C1875 /* ControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlView.swift; sourceTree = "<group>"; };
 		A7443AE527EB7273009C1875 /* DeviceSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSetupView.swift; sourceTree = "<group>"; };
-		A7443AE727EB7FC6009C1875 /* GyroController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyroController.swift; sourceTree = "<group>"; };
+		A7443AEB27F4C91F009C1875 /* VideoHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoHelper.swift; sourceTree = "<group>"; };
+		A7443AED27F4C936009C1875 /* PlayVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayVideoViewController.swift; sourceTree = "<group>"; };
 		A767F7D327E32B2500D35C54 /* ARSUIViewSquat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSUIViewSquat.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -110,11 +112,12 @@
 				55BFE69A25D2268B00E2BB8C /* ContentView.swift */,
 				A7443AE527EB7273009C1875 /* DeviceSetupView.swift */,
 				A7443AE327EB4921009C1875 /* ControlView.swift */,
-				A7443AE727EB7FC6009C1875 /* GyroController.swift */,
 				55AFF6632612798200D05AE3 /* ARSUIView2D.swift */,
 				A767F7D327E32B2500D35C54 /* ARSUIViewSquat.swift */,
 				55AE082C264C2DCE00227F35 /* BodyARView.swift */,
 				55BFE69925D2268B00E2BB8C /* AppDelegate.swift */,
+				A7443AED27F4C936009C1875 /* PlayVideoViewController.swift */,
+				A7443AEB27F4C91F009C1875 /* VideoHelper.swift */,
 				55BFE69425D2268B00E2BB8C /* Assets.xcassets */,
 				55BFE69B25D2268B00E2BB8C /* Info.plist */,
 				551C19C2261250CE00530422 /* License */,
@@ -222,12 +225,13 @@
 			files = (
 				55BFE6A125D2268B00E2BB8C /* AppDelegate.swift in Sources */,
 				550F68E42655FE03003F2808 /* ARView+Occlusion.swift in Sources */,
+				A7443AEC27F4C920009C1875 /* VideoHelper.swift in Sources */,
+				A7443AEE27F4C937009C1875 /* PlayVideoViewController.swift in Sources */,
 				A7443AE427EB4921009C1875 /* ControlView.swift in Sources */,
 				A767F7D427E32B2500D35C54 /* ARSUIViewSquat.swift in Sources */,
 				A7443AE627EB7274009C1875 /* DeviceSetupView.swift in Sources */,
 				55BFE6A225D2268B00E2BB8C /* ContentView.swift in Sources */,
 				550F68E72655FE03003F2808 /* BodyTrackedEntity+Extension.swift in Sources */,
-				A7443AE827EB7FC6009C1875 /* GyroController.swift in Sources */,
 				55AE082D264C2DCE00227F35 /* BodyARView.swift in Sources */,
 				55AFF6642612798200D05AE3 /* ARSUIView2D.swift in Sources */,
 				55BFE69C25D2268B00E2BB8C /* Model.swift in Sources */,

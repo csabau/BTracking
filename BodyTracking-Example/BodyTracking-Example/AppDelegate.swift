@@ -8,13 +8,24 @@
 import UIKit
 import SwiftUI
 
+
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+   public var uiWindow: UIWindow?
+ 
+    
+
+    
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        
+        
+        
 
         // Create the SwiftUI view that provides the window contents.
         let contentView = ContentView().environmentObject(DataModel.shared)
@@ -23,9 +34,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIHostingController(rootView: contentView)
         self.window = window
+        //----------------------------------+
+        //new code for a new UIWindow
+        //setting the AR window / contentView level to main / normal
+        window.windowLevel = .normal
+        //+----------------------------------//
         window.makeKeyAndVisible()
+        //newWindow(isHidden: true)
+        //----------------------------------+
+        let uiWindow = UIWindow(frame: CGRect(x:0, y: 70, width:UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 70) /*UIScreen.main.bounds*/  /*CGRect(x:0, y: UIScreen.main.bounds.height - 200, width:UIScreen.main.bounds.width, height: 200)*/)
+        self.uiWindow = uiWindow
+        uiWindow.windowLevel = UIWindow.Level(UIWindow.Level.normal.rawValue + 1)
+        uiWindow.isOpaque = false
+
+        //Render SwiftUI based UI
+        let content = ControlView()
+            .background(Color.clear)
+
+        let hosting = UIHostingController(rootView: content)
+        hosting.view.backgroundColor = .clear
+        hosting.view.isOpaque = false
+
+        uiWindow.rootViewController = hosting
+        uiWindow.isHidden = true
+
+       // uiWindow.makeKeyAndVisible()
+        //+----------------------------------//
+        
         return true
     }
+    
+  
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -46,4 +85,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-
